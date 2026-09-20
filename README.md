@@ -1,4 +1,4 @@
-# ASCIIArt - After Effects Plugin & Live Video Converter
+# ASCIIArt - In-Browser Real-time ASCII VIdeo Converter
 
 `ASCIIArt` is an Adobe After Effects C++ native plugin (`.aex`) and live interactive web simulator that converts any video into stylized ASCII text art in real time.
 
