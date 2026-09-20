@@ -1,0 +1,31 @@
+{
+  "name": "ascii-macho",
+  "version": "1.0.0",
+  "description": "ASCII Macho — Standalone Desktop Video ASCII Art Studio",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "serve": "node server.js",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "ascii",
+    "video",
+    "after-effects",
+    "animation",
+    "generator",
+    "desktop-app"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^31.0.0"
+  },
+  "build": {
+    "appId": "com.asciimacho.app",
+    "productName": "ASCII Macho Studio",
+    "win": {
+      "target": "portable"
+    }
+  }
+}

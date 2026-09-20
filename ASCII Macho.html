@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Macho</title>
+    <meta name="description" content="ASCII Macho — Offline ASCII video art tool">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&family=Fira+Code:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --font-ui: 'VT323', 'Courier New', monospace;
+            --font-pixel: 'Press Start 2P', monospace;
+            --font-mono: 'Fira Code', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="ae-app-container">
+        <!-- Top App Bar -->
+        <header class="ae-header">
+            <div class="ae-brand">
+                <img class="ae-logo" src="logo.jpg" alt="ASCII Macho" title="ASCII Macho">
+            </div>
+            <div class="header-actions">
+                <label class="btn btn-secondary" for="video-upload-input">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                    Upload Video
+                </label>
+                <input type="file" id="video-upload-input" accept="video/*" hidden>
+                <button id="btn-webcam" class="btn btn-secondary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Use Camera
+                </button>
+                <button id="btn-demo-synth" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Load Motion Demo
+                </button>
+                <button id="btn-export-video-header" class="btn btn-render-accent">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Render Video
+                </button>
+            </div>
+        </header>
+
+        <main class="ae-workspace">
+            <!-- Left Panel: Effect Controls Panel -->
+            <aside class="ae-panel effect-controls-panel">
+                <div class="panel-header">
+                    <span class="panel-tab active">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                        Effect Controls
+                    </span>
+                    <span class="comp-name" id="comp-layer-name">ASCII Macho — Synth Demo</span>
+                </div>
+
+                <div class="effect-header">
+                    <div class="effect-title-row">
+                        <span class="fx-icon">fx</span>
+                        <span class="effect-name">ASCIIArt</span>
+                        <button class="reset-btn" id="btn-reset-params">Reset</button>
+                    </div>
+                </div>
+
+                <!-- Parameters Hierarchy matching AE UI -->
+                <div class="params-tree">
+                    
+                    <!-- Resolution Options Group -->
+                    <div class="param-group accordion-group expanded">
+                        <div class="group-header" data-toggle="group-res">
+                            <span class="arrow">▼</span>
+                            <span class="group-title">Resolution Options</span>
+                        </div>
+                        <div class="group-content" id="group-res">
+                            <!-- Block Size -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="blockSize" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="blockSize" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-block-size">Block Size</label>
+                                <div class="param-control">
+                                    <input type="range" id="slider-block-size" min="1" max="50" step="1" value="10" class="ae-slider">
+                                    <input type="number" id="param-block-size" min="1" max="100" value="10" class="ae-number-input">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Character Options Group -->
+                    <div class="param-group accordion-group expanded">
+                        <div class="group-header" data-toggle="group-char">
+                            <span class="arrow">▼</span>
+                            <span class="group-title">Character Options</span>
+                        </div>
+                        <div class="group-content" id="group-char">
+                            <!-- Character Size -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="charSize" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="charSize" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-char-size">Character Size</label>
+                                <div class="param-control">
+                                    <input type="range" id="slider-char-size" min="0.10" max="4.00" step="0.05" value="1.30" class="ae-slider">
+                                    <input type="number" id="param-char-size" min="0.10" max="10.0" step="0.05" value="1.30" class="ae-number-input">
+                                </div>
+                            </div>
+
+                            <!-- Style Options -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="pattern" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="pattern" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-text-pattern">Style Options</label>
+                                <div class="param-control">
+                                    <select id="param-text-pattern" class="ae-select">
+                                        <option value="pattern1" selected>Pattern 1</option>
+                                        <option value="pattern2">Pattern 2 (Dense Ramps)</option>
+                                        <option value="binary">Binary Code (01)</option>
+                                        <option value="blocks">Block Elements (█▓▒░)</option>
+                                        <option value="simple">Simple ASCII (.:+*#@)</option>
+                                        <option value="gba">GBA Camera (Game Boy)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Reverse text pattern -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="reversePattern" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="reversePattern" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-reverse-pattern">Reverse text pattern</label>
+                                <div class="param-control checkbox-control">
+                                    <input type="checkbox" id="param-reverse-pattern" class="ae-checkbox">
+                                    <span class="checkbox-status">Enabled</span>
+                                </div>
+                            </div>
+
+                            <!-- Letter Size based on brig -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="letterSizeBrig" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="letterSizeBrig" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-letter-size-brig" title="Letter Size based on brightness">Letter Size based on brig</label>
+                                <div class="param-control checkbox-control">
+                                    <input type="checkbox" id="param-letter-size-brig" class="ae-checkbox">
+                                    <span class="checkbox-status">Enabled</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Color Options Group -->
+                    <div class="param-group accordion-group expanded">
+                        <div class="group-header" data-toggle="group-color">
+                            <span class="arrow">▼</span>
+                            <span class="group-title">Color Options</span>
+                        </div>
+                        <div class="group-content" id="group-color">
+                            <!-- Original Color -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="originalColor" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="originalColor" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-original-color">Original Color</label>
+                                <div class="param-control checkbox-control">
+                                    <input type="checkbox" id="param-original-color" class="ae-checkbox">
+                                    <span class="checkbox-status">Enabled</span>
+                                </div>
+                            </div>
+
+                            <!-- Custom Color Start -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="colorStart" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="colorStart" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-color-start">Custom Color Start</label>
+                                <div class="param-control color-picker-control">
+                                    <input type="color" id="param-color-start" value="#ffffff" class="ae-color-picker">
+                                    <span class="eyedropper-btn">➔</span>
+                                </div>
+                            </div>
+
+                            <!-- Custom Color End -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="colorEnd" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="colorEnd" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-color-end">Custom Color End</label>
+                                <div class="param-control color-picker-control">
+                                    <input type="color" id="param-color-end" value="#ffffff" class="ae-color-picker">
+                                    <span class="eyedropper-btn">➔</span>
+                                </div>
+                            </div>
+
+                            <!-- Background Color -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="bgColor" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="bgColor" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-bg-color">Background Color</label>
+                                <div class="param-control color-picker-control">
+                                    <input type="color" id="param-bg-color" value="#000000" class="ae-color-picker">
+                                    <span class="eyedropper-btn">➔</span>
+                                </div>
+                            </div>
+
+                            <!-- Transparent Background -->
+                            <div class="param-row">
+                                <div class="kf-controls-cell">
+                                    <button class="kf-btn kf-stopwatch-btn" data-param="transparentBg" title="Toggle Stopwatch">⏱</button>
+                                    <button class="kf-btn kf-diamond-btn" data-param="transparentBg" title="Add / Remove Keyframe">◆</button>
+                                </div>
+                                <label class="param-label" for="param-transparent-bg">Transparent Background</label>
+                                <div class="param-control checkbox-control">
+                                    <input type="checkbox" id="param-transparent-bg" class="ae-checkbox">
+                                    <span class="checkbox-status">Enabled</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+            <!-- Center & Right Area: Viewport + Timeline -->
+            <div class="ae-right-area">
+                <!-- Top: Composition Viewport -->
+                <section class="ae-panel viewport-panel">
+                    <div class="viewport-header">
+                        <div class="vp-tabs">
+                            <span class="vp-tab active">Composition: Comp 1</span>
+                        </div>
+                        <div class="vp-info">
+                            <span id="resolution-badge">1920 x 1080 (100%)</span>
+                            <span id="fps-badge">60 FPS</span>
+                        </div>
+                    </div>
+
+                    <div class="viewport-canvas-container" id="canvas-container">
+                        <canvas id="output-canvas"></canvas>
+                        <video id="source-video" playsinline loop crossorigin="anonymous" muted class="source-video-element"></video>
+                        <div class="viewport-zoom-hud" id="viewport-zoom-hud">
+                            <button id="btn-zoom-out" class="zoom-hud-btn" title="Zoom Out (Ctrl + Scroll Down)">−</button>
+                            <span id="zoom-level-label" class="zoom-hud-label" title="Click to reset zoom (100%)">100%</span>
+                            <button id="btn-zoom-in" class="zoom-hud-btn" title="Zoom In (Ctrl + Scroll Up)">+</button>
+                            <button id="btn-zoom-reset" class="zoom-hud-btn" title="Reset Zoom & Pan (Double-click canvas)">⟲</button>
+                        </div>
+                    </div>
+
+                    <!-- Video Timeline Controls -->
+                    <div class="timeline-controls-bar">
+                        <div class="playback-buttons">
+                            <button id="btn-play-pause" class="icon-btn" title="Play / Pause">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            </button>
+                            <button id="btn-stop" class="icon-btn" title="Stop">
+                                <rect x="6" y="6" width="12" height="12" fill="currentColor"/>
+                            </button>
+                            <span id="timecode-display" class="timecode">00:00:00:00</span>
+                        </div>
+
+                        <div class="seeker-wrapper">
+                            <input type="range" id="video-seeker" min="0" max="100" value="0" step="0.1">
+                        </div>
+
+                        <div class="export-actions">
+                            <button id="btn-copy-ascii" class="btn btn-sm">Copy Frame ASCII Text</button>
+                            <button id="btn-export-frame" class="btn btn-sm">Export Snapshot (PNG)</button>
+                            <button id="btn-export-video-bar" class="btn btn-sm btn-render-accent">Render ASCII Video</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bottom: AE Keyframe Timeline Dope Sheet Panel -->
+                <section class="ae-panel ae-timeline-panel" id="ae-timeline-panel">
+                    <div class="timeline-panel-header">
+                        <div class="tl-header-left">
+                            <span class="panel-tab active">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                                Timeline: <span id="tl-comp-title">ASCII Macho — Synth Demo</span>
+                            </span>
+                            <span class="tl-timecode-badge" id="tl-timecode-display">00:00:00:00</span>
+                        </div>
+                        <div class="tl-header-right">
+                            <span class="tl-info-label">Active Keyframes: <b id="tl-total-keyframes-count">0</b></span>
+                            <button id="btn-tl-add-kf" class="btn btn-sm" title="Add keyframe for active properties at playhead">
+                                <span>+ Keyframe</span>
+                            </button>
+                            <button id="btn-tl-delete-kf" class="btn btn-sm" title="Delete keyframe under playhead">
+                                <span>Delete Keyframe</span>
+                            </button>
+                            <button id="btn-tl-clear-all" class="btn btn-sm" title="Clear all keyframes">
+                                <span>Clear All</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="timeline-body">
+                        <!-- Left Column: Layer & Track Names -->
+                        <div class="tl-track-headers-column" id="tl-track-headers">
+                            <div class="tl-track-row root-layer-row">
+                                <span class="tl-twirl">▼</span>
+                                <span class="tl-layer-icon">📄</span>
+                                <span class="tl-row-label">Layer 1: Video (ASCIIArt)</span>
+                            </div>
+                            <div id="tl-property-headers-list">
+                                <!-- Dynamically filled with active animated properties -->
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Time Ruler & Dope Sheet Grid -->
+                        <div class="tl-dope-sheet-column" id="tl-dope-sheet-wrapper">
+                            <!-- Time Ruler Bar -->
+                            <div class="tl-ruler" id="tl-ruler">
+                                <canvas id="tl-ruler-canvas"></canvas>
+                            </div>
+
+                            <!-- Tracks Container with Keyframe Diamond Markers -->
+                            <div class="tl-tracks-scroll" id="tl-tracks-scroll">
+                                <div class="tl-tracks-container" id="tl-tracks-container">
+                                    <div class="tl-track-lane root-lane"></div>
+                                    <div id="tl-property-lanes-list">
+                                        <!-- Dynamically filled with lanes matching property headers -->
+                                    </div>
+                                </div>
+                                <!-- Current Time Indicator (Playhead) -->
+                                <div class="tl-playhead" id="tl-playhead">
+                                    <div class="tl-playhead-head"></div>
+                                    <div class="tl-playhead-line"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Render Queue & Video Exporter Modal -->
+    <div id="export-video-modal" class="ae-modal-overlay">
+        <div class="ae-modal-card">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    ASCII Macho — Export Video
+                </div>
+                <button id="modal-close-x" class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="export-config-grid">
+                    <div class="config-item">
+                        <label class="config-label" for="render-acceleration">Hardware Acceleration</label>
+                        <select id="render-acceleration" class="ae-select">
+                            <option value="gpu" selected>⚡ GPU Hardware (WebCodecs / MediaRecorder)</option>
+                            <option value="cpu">💻 CPU Software (Frame-Accurate Precision)</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label" for="render-format">Container & Codec</label>
+                        <select id="render-format" class="ae-select">
+                            <option value="mp4">MP4 Video (H.264 / AVC)</option>
+                            <option value="webm" selected>WebM Video (VP9 / High Quality)</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label" for="render-fps">Export Framerate</label>
+                        <select id="render-fps" class="ae-select">
+                            <!-- Options populated dynamically by JS based on imported video FPS -->
+                            <option value="30" selected>30 FPS (Standard)</option>
+                            <option value="24">24 FPS (Cinematic)</option>
+                        </select>
+                    </div>
+
+                    <div class="config-item">
+                        <label class="config-label" for="render-bitrate">Target Bitrate</label>
+                        <select id="render-bitrate" class="ae-select">
+                            <option value="15000000">ProRes / High (15 Mbps)</option>
+                            <option value="8000000" selected>Production (8 Mbps)</option>
+                            <option value="4000000">Standard (4 Mbps)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="render-progress-section">
+                    <div class="progress-header">
+                        <span id="render-status-text">Ready to render video</span>
+                        <span id="hardware-active-badge" class="hardware-badge badge-gpu">GPU acceleration ready</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="render-progress-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div class="progress-stats-row">
+                        <span id="render-frame-counter">Frame 0 / 0</span>
+                        <span id="render-fps-stat">0 FPS</span>
+                        <span id="render-percentage-stat">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="btn-cancel-render" class="btn btn-secondary">Close</button>
+                <button id="btn-start-render" class="btn btn-render-accent">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Start Rendering
+                </button>
+                <button id="btn-download-video" class="btn btn-primary" style="display: none;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download Exported Video
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
